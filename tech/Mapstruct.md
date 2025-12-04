@@ -88,4 +88,4 @@ public interface MyMapper {
 
 ---
 
-[← 返回文档首页](./index.md)
+[← 返回文档首页](../index.md)

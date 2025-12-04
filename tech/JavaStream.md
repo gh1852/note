@@ -108,4 +108,4 @@ assertEquals(2, splitByLength(original, 13).get(true).size()); // partitioningBy
 
 ---
 
-[← 返回文档首页](./index.md)
+[← 返回文档首页](../index.md)
