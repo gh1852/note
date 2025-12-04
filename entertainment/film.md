@@ -1,4 +1,4 @@
-> **注意：** 本文档使用 HTML 标签来显示彩色分类标签，以确保在各种 Markdown 查看器中正确渲染。
+### 影视资源导航 - 精选的动漫、影视资源网站合集，包含各类热门资源链接
 
 | 📁 网站分类 | 🌐 点击直达 | 📝 备注说明 |
 |:---|:---|:---|
@@ -44,6 +44,7 @@
 | <span style="color:#FF4444">热门影视</span> | [修罗影视](https://xlys.me/) | 👍 最新电影电视剧短剧 |
 | <span style="color:#FF4444">热门影视</span> | [TVB云播](http://www.hktvyb.vip/) | 高清画质/多线路 |
 | <span style="color:#FF4444">热门影视</span> | [LIVIBO](https://www.libvio.vip/) | 主打国外影视 |
+| <span style="color:#FF4444">热门影视</span> | [kimivod](https://kimivod.com/) | 👍 影视在线搜索库 |
 | <span style="color:#FF85B4">韩剧资源</span> | [韩剧看看](https://www.hanjukankan.com/) | 超清韩国电影/剧集/综艺 |
 | <span style="color:#FF9999">美剧资源</span> | [美剧天堂](https://www.imeijutt.tv/) | 超清美剧剧集 |
 
