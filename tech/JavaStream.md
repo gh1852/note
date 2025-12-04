@@ -1,3 +1,13 @@
+### 文档概述
+本文档详细对比Java Stream API中partitioningBy和groupingBy两个收集器的核心差异。partitioningBy用于二分分组（true/false），返回Map<Boolean, List<T>>；groupingBy用于多分组，返回Map<K, List<T>>。文档涵盖功能对比、代码示例、高级用法、性能分析和最佳实践，帮助开发者根据场景选择合适的分组策略。
+
+### 使用场景
+- **二分分组**：使用partitioningBy处理Yes/No、奇偶、大小比较等二元分类场景
+- **多分组**：使用groupingBy按长度、类型、枚举等进行多类别分组
+- **性能优化**：在大数据量场景下优先选择partitioningBy获得更好的性能
+- **嵌套分组**：使用groupingBy实现多级分组（如先按长度再按首字母）
+- **下游处理**：结合counting、toSet等下游收集器进行统计和去重操作
+
 ### Java Stream：`partitioningBy` vs `groupingBy` 区别
 
 **简答**：**`partitioningBy`** 是 **二分**（true/false，基于 Predicate），返回 `Map<Boolean, List<T>>`；**`groupingBy`** 是 **多分组**（任意 key 类型），返回 `Map<K, List<T>>`。`partitioningBy` 是 `groupingBy` 的**高效特化**（一次遍历、boolean key），**优先二分用 partitioningBy**。
