@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线图片切片工具</title>
+    <!-- 引入 JSZip 用于打包下载 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2196F3;
+            --bg-color: #f5f5f5;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        h1 { margin-top: 0; color: #444; }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .input-group label {
+            font-size: 14px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="number"], input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.2s;
+            margin: 5px;
+        }
+
+        button:hover { background-color: #1976D2; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+        
+        button.secondary {
+            background-color: #4CAF50;
+        }
+        button.secondary:hover { background-color: #388E3C; }
+
+        #preview-area {
+            margin-top: 20px;
+            border: 2px dashed #ddd;
+            min-height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            overflow: auto;
+        }
+
+        /* 网格展示切片 */
+        .grid-display {
+            display: grid;
+            gap: 2px; /* 切片之间的间隙 */
+            background-color: #eee;
+            border: 1px solid #ccc;
+        }
+
+        .grid-item {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.2s;
+        }
+        
+        .grid-item:hover {
+            transform: scale(1.05);
+            z-index: 10;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        .info {
+            margin-top: 10px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>✂️ 在线图片切片工具</h1>
+        
+        <div class="controls">
+            <div class="input-group">
+                <label>1. 选择图片</label>
+                <input type="file" id="fileInput" accept="image/*">
+            </div>
+            <div class="input-group">
+                <label>横向切割 (行数)</label>
+                <input type="number" id="rowsInput" value="3" min="1">
+            </div>
+            <div class="input-group">
+                <label>竖向切割 (列数)</label>
+                <input type="number" id="colsInput" value="3" min="1">
+            </div>
+        </div>
+
+        <div>
+            <button id="sliceBtn" onclick="processImage()">开始切割预览</button>
+            <button id="downloadBtn" class="secondary hidden" onclick="downloadZip()">📦 打包下载所有切片</button>
+        </div>
+
+        <p class="info" id="statusMsg">请上传图片并设置参数</p>
+
+        <div id="preview-area">
+            <span style="color: #999;">预览区域</span>
+        </div>
+    </div>
+
+    <script>
+        let originalImage = null;
+        let slicedImages = []; // 存储切好的图片数据 Blob
+        let originalFileName = "image";
+
+        // 监听文件上传
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            originalFileName = file.name.split('.')[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    originalImage = img;
+                    document.getElementById('statusMsg').innerText = `图片加载成功: ${img.width}x${img.height}px`;
+                    // 自动触发一次预览（可选）
+                    // processImage();
+                }
+                img.src = event.target.result;
+            }
+            reader.readAsDataURL(file);
+        });
+
+        function processImage() {
+            if (!originalImage) {
+                alert("请先选择一张图片！");
+                return;
+            }
+
+            const rows = parseInt(document.getElementById('rowsInput').value);
+            const cols = parseInt(document.getElementById('colsInput').value);
+            
+            if (rows < 1 || cols < 1) {
+                alert("行数和列数必须大于0");
+                return;
+            }
+
+            const previewArea = document.getElementById('preview-area');
+            previewArea.innerHTML = ''; // 清空
+            slicedImages = []; // 重置存储
+
+            // 创建网格容器
+            const gridContainer = document.createElement('div');
+            gridContainer.className = 'grid-display';
+            gridContainer.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            // 限制预览图最大宽度，防止撑爆页面
+            gridContainer.style.maxWidth = '100%'; 
+            
+            // 计算每块的尺寸
+            const itemWidth = Math.floor(originalImage.width / cols);
+            const itemHeight = Math.floor(originalImage.height / rows);
+
+            // 遍历切割
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = itemWidth;
+                    canvas.height = itemHeight;
+                    const ctx = canvas.getContext('2d');
+
+                    // drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
+                    ctx.drawImage(
+                        originalImage, 
+                        c * itemWidth, r * itemHeight, itemWidth, itemHeight, // 源图坐标和尺寸
+                        0, 0, itemWidth, itemHeight // 目标画布坐标和尺寸
+                    );
+
+                    // 1. 用于显示的 img 标签
+                    const imgTag = document.createElement('img');
+                    imgTag.src = canvas.toDataURL('image/png');
+                    imgTag.className = 'grid-item';
+                    imgTag.title = `第${r+1}行, 第${c+1}列 (点击下载这张)`;
+                    
+                    // 单击单独下载
+                    (function(row, col, dataUrl) {
+                        imgTag.onclick = () => {
+                            const link = document.createElement('a');
+                            link.download = `${originalFileName}_${row+1}_${col+1}.png`;
+                            link.href = dataUrl;
+                            link.click();
+                        };
+                    })(r, c, canvas.toDataURL('image/png'));
+
+                    gridContainer.appendChild(imgTag);
+
+                    // 2. 将数据存入 slicedImages 数组用于打包下载
+                    // canvas 转 blob
+                    canvas.toBlob((blob) => {
+                        slicedImages.push({
+                            name: `${originalFileName}_${r+1}_${c+1}.png`,
+                            blob: blob
+                        });
+                        
+                        // 检查是否所有图片都处理完毕
+                        if (slicedImages.length === rows * cols) {
+                             document.getElementById('downloadBtn').classList.remove('hidden');
+                             document.getElementById('statusMsg').innerText = `切割完成！共 ${rows*cols} 张图片。`;
+                        }
+                    }, 'image/png');
+                }
+            }
+            
+            previewArea.appendChild(gridContainer);
+        }
+
+        function downloadZip() {
+            if (slicedImages.length === 0) return;
+
+            const zip = new JSZip();
+            const folder = zip.folder("split_images");
+
+            slicedImages.forEach(item => {
+                folder.file(item.name, item.blob);
+            });
+
+            document.getElementById('downloadBtn').innerText = "正在打包...";
+            
+            zip.generateAsync({type:"blob"})
+            .then(function(content) {
+                saveAs(content, `${originalFileName}_split.zip`);
+                document.getElementById('downloadBtn').innerText = "📦 打包下载所有切片";
+            });
+        }
+    </script>
+</body>
+</html>
