@@ -11,6 +11,7 @@
 - 📄 **[枚举共享 Handler 优化](./tech/handle.md)** - Java 8 + Spring 环境下相同逻辑枚举优化方案，避免重复创建 Bean，实现 O(1) 分发和高效内存利用
 - 📄 **[网络IO性能优化](./tech/networkIO.md)** - Spring Boot 2 环境下网络IO密集型服务的成熟优化方案，涵盖响应式编程、异步处理、容器调优等关键技术
 - 📄 **[短链接服务设计](./tech/ShortLink.md)** - 基于自增ID + Base62编码的短链接实现方案，包含完整代码示例和性能优化策略
+- 📄 **[Superpowers 技能化工作流](./tech/SuperpowersSkills.md)** - 基于 obra/superpowers 的高效编码工作流，包含设计、计划、TDD执行、评审、收尾等纪律化流程的最佳实践
 
 ### 🎬 娱乐类
 - 📄 **[影视资源导航](./entertainment/film.md)** - 精选的动漫、影视资源网站合集，包含各类热门资源链接
@@ -26,4 +27,4 @@
 
 ---
 
-*最后更新：2025年12月4日*
+*最后更新：2026年1月21日*
