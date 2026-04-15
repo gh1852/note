@@ -8,6 +8,7 @@
 - 📄 **[Git Revert 详细教程](./tech/git.md)** - 安全撤销提交的最佳实践，包含基本用法、冲突处理、高级场景等完整指南
 - 📄 **[Java Stream 收集器对比](./tech/JavaStream.md)** - partitioningBy 与 groupingBy 的核心差异、性能对比及最佳实践
 - 📄 **[Mapstruct 字段映射](./tech/Mapstruct.md)** - 条件逻辑处理技巧，如何为特定字段应用数值验证等高级用法
+- 📄 **[MySQL 日期计算](./tech/mysql-date-calculation.md)** - MySQL 日期函数详解，包括 DATE_ADD、DATE_SUB、时间间隔计算及常用场景示例
 - 📄 **[枚举共享 Handler 优化](./tech/handle.md)** - Java 8 + Spring 环境下相同逻辑枚举优化方案，避免重复创建 Bean，实现 O(1) 分发和高效内存利用
 - 📄 **[网络IO性能优化](./tech/networkIO.md)** - Spring Boot 2 环境下网络IO密集型服务的成熟优化方案，涵盖响应式编程、异步处理、容器调优等关键技术
 - 📄 **[短链接服务设计](./tech/ShortLink.md)** - 基于自增ID + Base62编码的短链接实现方案，包含完整代码示例和性能优化策略
@@ -27,4 +28,4 @@
 
 ---
 
-*最后更新：2026年1月21日*
+*最后更新：2026年4月15日*
